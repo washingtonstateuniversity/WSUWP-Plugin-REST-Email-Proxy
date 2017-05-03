@@ -1,0 +1,59 @@
+sudo: false
+language: php
+
+# Cache some data across builds for performance.
+cache:
+  apt: true
+  directories:
+    - node_modules
+    - vendor
+    - $HOME/.composer/cache
+
+# Set the default environment.
+env:
+  global:
+    - WSU_GRUNT=1
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+  slack:
+    on_pull_requests: true
+    on_success: change
+    on_failure: always
+    on_start: never
+    on_cancel: always
+    rooms:
+      - wsu-ucomm:n2TLZRJd84rMOMbkKthSEMgS
+
+branches:
+  only:
+    - master
+
+matrix:
+  include:
+    - php: 7.1
+    - php: 7.0
+    - php: 5.6
+
+before_script:
+    - phpenv config-rm xdebug.ini
+    - composer config --list --global
+    - export PATH=`composer config --list --global | grep '\[home\]' | { read a; echo "${a#* }/vendor/bin:$PATH"; }`
+    - |
+      if [[ "$WSU_GRUNT" == 1 ]]; then
+        composer install
+        nvm install stable
+        npm install -g grunt-cli
+        npm install
+        npm prune
+        npm --version
+        node --version
+      fi
+    - phpenv versions
+    - php --version
+
+script:
+    - grunt --version
+    - grunt
