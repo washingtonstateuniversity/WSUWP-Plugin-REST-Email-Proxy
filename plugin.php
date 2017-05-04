@@ -21,4 +21,6 @@ add_action( 'plugins_loaded', 'WSU\RestEmailProxy\bootstrap' );
  *
  * @since 0.0.1
  */
-function bootstrap() {}
+function bootstrap() {
+	include_once __DIR__ . '/includes/endpoint.php';
+}
