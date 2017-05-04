@@ -33,6 +33,7 @@ function register_routes() {
 function callback( $data ) {
 	$email = $data->get_json_params();
 
+	// Do not send email by default. Another plugin should control the secret to success.
 	if ( ! isset( $email['secret_key'] ) || ! apply_filters( 'rest_email_proxy_valid_secret', false, $email ) ) {
 		return new \WP_Rest_Response( array(
 			'error' => 'Invalid secret.',
@@ -58,11 +59,13 @@ function callback( $data ) {
 	$send_to = sanitize_email( $email['send_to'] );
 	$subject = sanitize_text_field( $email['subject'] );
 	$message = wp_kses_post( $email['message'] );
+
+	// Allow for a blanket "from" address that matches the server.
 	$from_email = apply_filters( 'rest_email_proxy_default_email', $email['send_from'] );
 
 	$headers = array(
 		'from: "' . sanitize_text_field( $email['send_from_name'] ) . '" <' . sanitize_email( $from_email ) . '>',
-		'reply-to: ' . sanitize_email( $email['send_from'] ),
+		'reply-to: ' . sanitize_email( $email['send_from'] ), // reply-to is untouched.
 	);
 
 	$result = wp_mail( $send_to, $subject, $message, $headers );
