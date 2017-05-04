@@ -70,13 +70,7 @@ function callback( $data ) {
 
 	$result = wp_mail( $send_to, $subject, $message, $headers );
 
-	if ( $result ) {
-		$success = 'Message sent successfully.';
-	} else {
-		$success = 'An error occurred when sending the email.';
-	}
-
 	return new \WP_REST_Response( array(
-		'success' => $success,
+		'success' => $result,
 	), 200 );
 }
