@@ -42,7 +42,7 @@ function callback( $data ) {
 
 	$expected = array(
 		'send_to',
-		'send_from',
+		'reply_to',
 		'send_from_name',
 		'subject',
 		'message',
@@ -61,11 +61,11 @@ function callback( $data ) {
 	$message = wp_kses_post( $email['message'] );
 
 	// Allow for a blanket "from" address that matches the server.
-	$from_email = apply_filters( 'rest_email_proxy_default_email', $email['send_from'] );
+	$from_email = apply_filters( 'rest_email_proxy_default_email', $email['reply_to'] );
 
 	$headers = array(
 		'from: "' . sanitize_text_field( $email['send_from_name'] ) . '" <' . sanitize_email( $from_email ) . '>',
-		'reply-to: ' . sanitize_email( $email['send_from'] ), // reply-to is untouched.
+		'reply-to: ' . sanitize_email( $email['reply_to'] ),
 	);
 
 	$result = wp_mail( $send_to, $subject, $message, $headers );
